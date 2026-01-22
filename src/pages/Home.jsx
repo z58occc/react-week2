@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import '../assets/App.css'
+import "../assets/App.css";
 
 function Home() {
   const API_BASE = "https://ec-course-api.hexschool.io";
@@ -24,16 +24,20 @@ function Home() {
     });
   };
 
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
       const res = await axios.post(`${API_BASE}/v2/admin/signin`, formData);
-      console.log(res.data);
+      // 登入
+
       const { token, expired } = res.data;
       document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
+
+
       navigate("/productList");
     } catch (error) {
-      console.log(error);
+      alert(`${error.response.data.message} 請再試一次`);
     }
   }
 
@@ -46,6 +50,7 @@ function Home() {
             <form id="form" className="form-signin" onSubmit={handleSubmit}>
               <div className="form-floating mb-3">
                 <input
+                  name="username"
                   type="email"
                   className="form-control"
                   id="username"
@@ -59,6 +64,7 @@ function Home() {
               </div>
               <div className="form-floating">
                 <input
+                  name="password"
                   type="password"
                   className="form-control"
                   id="password"
