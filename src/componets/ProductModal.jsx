@@ -97,7 +97,6 @@ export default function ProductModal({
 
   return (
     <div id="productModal" className="modal  " tabIndex="-1">
-      {JSON.stringify(newProduct)}
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
