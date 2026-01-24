@@ -8,8 +8,11 @@ export default function ProductModal({
   getProducts,
   setProducts,
 }) {
+  const api = import.meta.env.VITE_APP_API_BASE;
+  const path = import.meta.env.VITE_APP_API_PATH;
   const imgRef = useRef(null);
   const imgsRef = useRef([]);
+  const [uploadImg, setUploadImg] = useState(null);
   const [newProduct, setNewProduct] = useState({
     title: "",
     category: "",
@@ -22,16 +25,27 @@ export default function ProductModal({
     imageUrl: "",
     imagesUrl: ["", "", "", "", ""],
   });
-  const api = import.meta.env.VITE_APP_API_BASE;
-  const path = import.meta.env.VITE_APP_API_PATH;
   const token = document.cookie
     .split("; ")
     .find((row) => row.startsWith("hexToken="))
     ?.split("=")[1];
 
+  async function upload(file) {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file-to-upload", file);
+    const uploadRes = await axios.post(
+      `${api}/v2/api/${path}/admin/upload`,
+      formData,
+      {
+        headers: { Authorization: token },
+      },
+    );
+    setUploadImg(uploadRes.data.imageUrl);
+  }
 
-    
   async function handleSubmit(e) {
+    //提交表單
     e.preventDefault();
     try {
       if (state === "update") {
@@ -65,6 +79,7 @@ export default function ProductModal({
   }
 
   function handleChange(e) {
+    //寫入資料
     const { dataset, name, value, checked } = e.target;
 
     let newValue = value;
@@ -227,6 +242,18 @@ export default function ProductModal({
                       value={newProduct.content}
                     />
                   </div>
+                  <div className="mb-3 form-check ps-0">
+                    <label className="form-check-label" htmlFor="is_enabled">
+                      商品評價
+                    </label>
+                    <select name="rating" onChange={(e) => handleChange(e)}>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
+                  </div>
                   <div className="mb-3 form-check">
                     <input
                       className="form-check-input"
@@ -244,6 +271,23 @@ export default function ProductModal({
                   </div>
                 </div>
                 <div className="col">
+                  <div className="mb-3">
+                    <label htmlFor="file-to-upload">上傳圖片</label>
+                    <input
+                      accept=".jpg,.jpeg,.png"
+                      onChange={(e) => {
+                        upload(e.target.files[0]);
+                      }}
+                      type="file"
+                      name="file-to-upload"
+                      id="file-to-upload"
+                    />
+                    <img
+                      src={uploadImg || null}
+                      alt="上傳的圖片"
+                      className={uploadImg ? "" : "d-none"}
+                    />
+                  </div>
                   <div className="mb-3">
                     <label htmlFor="imageUrl" className=" form-label">
                       主圖網址
