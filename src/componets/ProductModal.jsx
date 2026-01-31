@@ -5,8 +5,7 @@ export default function ProductModal({
   tempProduct,
   state,
   closeModal,
-  getProducts,
-  setProducts,
+  renderProducts,
 }) {
   const api = import.meta.env.VITE_APP_API_BASE;
   const path = import.meta.env.VITE_APP_API_PATH;
@@ -37,9 +36,6 @@ export default function ProductModal({
     const uploadRes = await axios.post(
       `${api}/v2/api/${path}/admin/upload`,
       formData,
-      {
-        headers: { Authorization: token },
-      },
     );
     setUploadImg(uploadRes.data.imageUrl);
   }
@@ -53,29 +49,18 @@ export default function ProductModal({
         const res = await axios.put(
           `${api}/v2/api/${path}/admin/product/${id}`,
           { data: newProduct },
-          {
-            headers: { Authorization: token },
-          },
         );
       } else {
-        const res = await axios.post(
-          `${api}/v2/api/${path}/admin/product`,
-          { data: newProduct },
-          {
-            headers: { Authorization: token },
-          },
-        );
+        const res = await axios.post(`${api}/v2/api/${path}/admin/product`, {
+          data: newProduct,
+        });
       }
-    } catch (error) {
-      console.log(error);
-    }
 
-    closeModal();
-    async function renderProducts() {
-      const res = await getProducts();
-      setProducts(res);
+      closeModal();
+      renderProducts();
+    } catch (error) {
+      alert(JSON.stringify(error.response.data.message));
     }
-    renderProducts();
   }
 
   function handleChange(e) {
@@ -111,7 +96,7 @@ export default function ProductModal({
   }, [tempProduct]);
 
   return (
-    <div id="productModal" className="modal  " tabIndex="-1">
+    <div id="productModal" className="modal  fade" tabIndex="-1">
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
@@ -167,6 +152,7 @@ export default function ProductModal({
                       原價
                     </label>
                     <input
+                      min="0"
                       type="number"
                       className="form-control"
                       id="origin_price"
@@ -183,6 +169,7 @@ export default function ProductModal({
                       售價
                     </label>
                     <input
+                      min="0"
                       type="number"
                       className="form-control"
                       id="price"

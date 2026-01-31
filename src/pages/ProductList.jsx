@@ -21,28 +21,25 @@ export default function ProductList() {
   });
   const [products, setProducts] = useState([]);
   const [modalState, setModalState] = useState("");
-  const API_BASE = "https://ec-course-api.hexschool.io";
-  // 請自行替換 API_PATH
-  const API_PATH = "z58occc";
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("hexToken="))
-    ?.split("=")[1];
+  const api = import.meta.env.VITE_APP_API_BASE;
+  const path = import.meta.env.VITE_APP_API_PATH;
   const navigate = useNavigate();
 
   async function getProducts() {
-    const res = await axios.get(`${API_BASE}/v2/api/${API_PATH}/products/all`);
+    const res = await axios.get(`${api}/v2/api/${path}/products/all`);
     return res.data.products;
   }
 
+  async function renderProducts() {
+    const res = await getProducts();
+    setProducts(res);
+  }
   async function userCheck(token) {
     try {
       const res = await axios.post(
-        `${API_BASE}/v2/api/user/check`,
+        `${api}/v2/api/user/check`,
         {},
-        {
-          headers: { Authorization: token },
-        },
+        { headers: { Authorization: token } },
       );
       setIsBlur(!isBlur);
     } catch (err) {
@@ -64,16 +61,9 @@ export default function ProductList() {
       }).then(async (result) => {
         if (result.isConfirmed) {
           const res = await axios.delete(
-            `${API_BASE}/v2/api/${API_PATH}/admin/product/${id}`,
-            {
-              headers: { Authorization: token },
-            },
+            `${api}/v2/api/${path}/admin/product/${id}`,
           );
           getProducts();
-          async function renderProducts() {
-            const res = await getProducts();
-            setProducts(res);
-          }
           renderProducts();
           Swal.fire({
             title: "Deleted!",
@@ -113,11 +103,11 @@ export default function ProductList() {
     }
     handleCheck(token);
 
-    async function renderProducts() {
+    async function initProducts() {
       const res = await getProducts();
       setProducts(res);
     }
-    renderProducts();
+    initProducts();
   }, []);
 
   return (
@@ -204,10 +194,9 @@ export default function ProductList() {
           </div>
           <ProductModal
             closeModal={closeModal}
-            getProducts={getProducts}
-            setProducts={setProducts}
             state={modalState}
             tempProduct={tempProduct}
+            renderProducts={renderProducts}
           />
         </div>
         {tempProduct.title ? (

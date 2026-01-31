@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import "../assets/App.css";
 
 function Home() {
-  const API_BASE = "https://ec-course-api.hexschool.io";
+  const api = import.meta.env.VITE_APP_API_BASE;
+  const path = import.meta.env.VITE_APP_API_PATH;
 
   // 請自行替換 API_PATH
-  const API_PATH = "z58occc";
 
   const [formData, setFormData] = useState({
     username: "",
@@ -24,16 +24,14 @@ function Home() {
     });
   };
 
-
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_BASE}/v2/admin/signin`, formData);
+      const res = await axios.post(`${api}/v2/admin/signin`, formData);
       // 登入
 
       const { token, expired } = res.data;
       document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
-
 
       navigate("/productList");
     } catch (error) {
