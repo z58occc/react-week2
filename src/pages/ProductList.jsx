@@ -113,7 +113,7 @@ export default function ProductList() {
   return (
     <div className="container">
       <div className="row mt-5">
-        <div
+        <div className="col-6"
           style={{
             filter: isBlur ? "blur(1.5rem)" : "",
           }}
@@ -200,7 +200,7 @@ export default function ProductList() {
           />
         </div>
         {tempProduct.title ? (
-          <>
+          <div className="col-6">
             <h2>單一產品細節</h2>
             <div className="card mb-3">
               <img
@@ -236,7 +236,7 @@ export default function ProductList() {
                 </div>
               </div>
             </div>
-          </>
+          </div>
         ) : (
           ""
         )}
