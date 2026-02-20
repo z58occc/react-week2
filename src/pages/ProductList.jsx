@@ -113,7 +113,8 @@ export default function ProductList() {
   return (
     <div className="container">
       <div className="row mt-5">
-        <div className="col-6"
+        <div
+          className="col-6"
           style={{
             filter: isBlur ? "blur(1.5rem)" : "",
           }}
@@ -215,6 +216,7 @@ export default function ProductList() {
                     {tempProduct.category}
                   </span>
                 </h5>
+                <p>商品評價：{Number(tempProduct.rating)}</p>
                 <p className="card-text">商品描述：{tempProduct.description}</p>
                 <p className="card-text">商品內容：{tempProduct.content}</p>
                 <div className="d-flex">
