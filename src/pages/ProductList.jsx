@@ -4,9 +4,13 @@ import { useNavigate } from "react-router-dom";
 import ProductModal from "../componets/ProductModal";
 import { Modal } from "bootstrap";
 import Swal from "sweetalert2";
+import Pagination from "../componets/Pagination";
+
 export default function ProductList() {
+  const [pagination, setPagination] = useState({});
   const [isBlur, setIsBlur] = useState(true);
   const myModal = useRef(null);
+  // const [token, setToken] = useState("");
   const [tempProduct, setTempProduct] = useState({
     title: "",
     category: "",
@@ -25,9 +29,13 @@ export default function ProductList() {
   const path = import.meta.env.VITE_APP_API_PATH;
   const navigate = useNavigate();
 
-  async function getProducts() {
-    const res = await axios.get(`${api}/v2/api/${path}/products/all`);
-    return res.data.products;
+  async function getProducts(page = 2) {
+    const res = await axios.get(
+      `${api}/v2/api/${path}/admin/products?page=${page}`
+    );
+    console.log(res.data);
+    setProducts(res.data.products);
+    setPagination(res.data.pagination);
   }
 
   async function renderProducts() {
@@ -97,17 +105,15 @@ export default function ProductList() {
       .split("; ")
       .find((row) => row.startsWith("hexToken="))
       ?.split("=")[1];
+    axios.defaults.headers.common.Authorization = token;
 
     async function handleCheck(token) {
       const res = await userCheck(token);
     }
     handleCheck(token);
-
-    async function initProducts() {
-      const res = await getProducts();
-      setProducts(res);
-    }
-    initProducts();
+  }, []);
+  useEffect(() => {
+    getProducts("1");
   }, []);
 
   return (
@@ -171,6 +177,7 @@ export default function ProductList() {
             </tbody>
           </table>
           <div className="d-flex justify-content-end">
+            <Pagination pagination={pagination} changePage={getProducts} />
             <button
               type="button"
               className="btn btn-info"
